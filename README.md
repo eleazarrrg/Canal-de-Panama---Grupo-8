@@ -266,14 +266,14 @@ desacoplada del proveedor, así que cambiarlo es trivial.
 **Grupo 8** — UTP, Facultad de Ingeniería de Sistemas Computacionales,
 I Semestre 2026.
 
-| Integrante | Responsabilidad principal |
-|---|---|
-| Juan Zhu | Ingesta de datos (clima, scraper, respaldo) |
-| Alex de Boutaud | Pipeline y construcción del dataset |
-| Jeremy Martínez | Machine Learning (modelo y pronóstico) |
-| Rafael Gómez | Dashboard (Streamlit, mapa, gráficas) |
-| Octavio Frauca | IA (resumen Gemini), documentación y despliegue |
+| Integrante | Cédula | Responsabilidad principal |
+|---|---|---|
+| Juan Zhu | 8-XXXX-XXXX | Ingesta de datos (clima, scraper, respaldo) |
+| Alex de Boutaud | 8-XXXX-XXXX | Pipeline y construcción del dataset |
+| Jeremy Martínez | 8-XXXX-XXXX | Machine Learning (modelo y pronóstico) |
+| Rafael Gómez | 8-XXXX-XXXX | Dashboard (Streamlit, mapa, gráficas) |
+| Octavio Frauca | 8-XXXX-XXXX | IA (resumen Gemini), documentación y despliegue |
 
-> Las **cédulas** de los integrantes van en la **portada del entregable** y no se
-> publican en este repositorio: los números de cédula son datos personales y este
-> repositorio es público.
+> Reemplacen `8-XXXX-XXXX` por la cédula real editando este archivo. (No las dejo
+> escritas automáticamente por ser datos personales; al ser el repositorio privado,
+> pueden completarlas con seguridad.)
