@@ -1,0 +1,32 @@
+{
+  "modelo": "RandomForestRegressor(n_estimators=400)",
+  "features": [
+    "mes",
+    "lluvia_mm",
+    "lluvia_acum_12m",
+    "transitos_lag1",
+    "transitos_lag12"
+  ],
+  "target": "transitos_total",
+  "evaluacion": "one-step-ahead (rezagos reales) sobre el test temporal",
+  "split": {
+    "train_meses": 108,
+    "test_meses": 12,
+    "test_desde": "2024-10-01",
+    "test_hasta": "2025-09-01"
+  },
+  "MAE": 10.72,
+  "RMSE": 12.5,
+  "R2": 0.4835,
+  "baselines_MAE": {
+    "persistencia_lag1": 13.83,
+    "estacional_lag12": 186.0
+  },
+  "importancia": {
+    "transitos_lag1": 0.7049,
+    "lluvia_acum_12m": 0.2053,
+    "transitos_lag12": 0.0505,
+    "lluvia_mm": 0.0226,
+    "mes": 0.0168
+  }
+}

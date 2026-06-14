@@ -1,0 +1,20 @@
+# Entorno virtual
+.venv/
+__pycache__/
+*.pyc
+
+# Secretos (API keys) — NO se commitea
+.streamlit/secrets.toml
+
+# Crudos: se regeneran con el pipeline
+data/raw/*
+!data/raw/.gitkeep
+
+# Sistema / IDE / herramientas
+.DS_Store
+.vscode/
+.idea/
+.claude/
+
+# Nota: data/processed/canal.parquet y models/ SÍ se versionan
+# para que la app despliegue en Streamlit Cloud sin correr el pipeline.
