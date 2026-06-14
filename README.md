@@ -268,12 +268,8 @@ I Semestre 2026.
 
 | Integrante | Cédula | Responsabilidad principal |
 |---|---|---|
-| Juan Zhu | 8-XXXX-XXXX | Ingesta de datos (clima, scraper, respaldo) |
-| Alex de Boutaud | 8-XXXX-XXXX | Pipeline y construcción del dataset |
-| Jeremy Martínez | 8-XXXX-XXXX | Machine Learning (modelo y pronóstico) |
-| Rafael Gómez | 8-XXXX-XXXX | Dashboard (Streamlit, mapa, gráficas) |
-| Octavio Frauca | 8-XXXX-XXXX | IA (resumen Gemini), documentación y despliegue |
-
-> Reemplacen `8-XXXX-XXXX` por la cédula real editando este archivo. (No las dejo
-> escritas automáticamente por ser datos personales; al ser el repositorio privado,
-> pueden completarlas con seguridad.)
+| Juan Zhu | 8-1010-701 | Ingesta de datos (clima, scraper, respaldo) |
+| Alex de Boutaud | 8-1015-1644 | Pipeline y construcción del dataset |
+| Jeremy Martínez | 8-1024-1470 | Machine Learning (modelo y pronóstico) |
+| Rafael Gómez | 8-1011-1757| Dashboard (Streamlit, mapa, gráficas) |
+| Octavio Frauca | 8-1010-1989 | IA (resumen Gemini), documentación y despliegue |
