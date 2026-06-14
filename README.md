@@ -4,8 +4,26 @@
 interactivo que cuenta cómo la disponibilidad de agua (lluvia y nivel del Lago
 Gatún) condiciona cuántos buques puede cruzar el Canal de Panamá.
 
+<p align="center">
+  <img src="assets/canal.svg" alt="Esquema del Canal de Panamá: océanos, esclusas, Lago Gatún y tránsitos" width="800">
+</p>
+
 Proyecto académico — UTP, Facultad de Ingeniería de Sistemas Computacionales,
 I Semestre 2026 (Grupo 8).
+
+## Inicio rápido
+
+```powershell
+git clone https://github.com/eleazarrrg/Canal-de-Panama---Grupo-8.git
+cd Canal-de-Panama---Grupo-8
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+La app abre en http://localhost:8501. Detalle, otros sistemas operativos y la clave
+de Gemini (opcional) están en las secciones **9** y **10**.
 
 ---
 
@@ -245,12 +263,17 @@ desacoplada del proveedor, así que cambiarlo es trivial.
 
 ## 13. Créditos
 
-Grupo 8 — UTP, FISC, I Semestre 2026.
+**Grupo 8** — UTP, Facultad de Ingeniería de Sistemas Computacionales,
+I Semestre 2026.
 
-- Juan Zhu
-- Alex de Boutaud
-- Jeremy Martínez
-- Rafael Gómez
-- Octavio Frauca
+| Integrante | Responsabilidad principal |
+|---|---|
+| Juan Zhu | Ingesta de datos (clima, scraper, respaldo) |
+| Alex de Boutaud | Pipeline y construcción del dataset |
+| Jeremy Martínez | Machine Learning (modelo y pronóstico) |
+| Rafael Gómez | Dashboard (Streamlit, mapa, gráficas) |
+| Octavio Frauca | IA (resumen Gemini), documentación y despliegue |
 
-(Cédulas: completar en la portada oficial del entregable.)
+> Las **cédulas** de los integrantes van en la **portada del entregable** y no se
+> publican en este repositorio: los números de cédula son datos personales y este
+> repositorio es público.

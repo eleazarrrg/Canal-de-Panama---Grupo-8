@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="960" height="360" fill="#eef6fc"/>
+  <text x="480" y="32" text-anchor="middle" font-size="23" font-weight="700" fill="#1b4f72">Canal de Panamá: agua → capacidad → tránsitos</text>
+
+  <!-- tierra -->
+  <rect x="0" y="300" width="960" height="60" fill="#caa472"/>
+  <rect x="0" y="300" width="960" height="6" fill="#a9824f"/>
+
+  <!-- agua: perfil escalonado (océano bajo, Lago Gatún alto, océano bajo) -->
+  <polygon points="0,250 180,250 180,150 690,150 690,250 960,250 960,300 0,300" fill="#3498db" opacity="0.92"/>
+  <line x1="0" y1="250" x2="180" y2="250" stroke="#aed6f1" stroke-width="3"/>
+  <line x1="180" y1="150" x2="690" y2="150" stroke="#d6eaf8" stroke-width="3"/>
+  <line x1="690" y1="250" x2="960" y2="250" stroke="#aed6f1" stroke-width="3"/>
+
+  <!-- esclusas -->
+  <g fill="#909497" stroke="#5d6d7e" stroke-width="2">
+    <rect x="158" y="150" width="44" height="150"/>
+    <rect x="668" y="150" width="44" height="150"/>
+  </g>
+  <g stroke="#5d6d7e" stroke-width="1.5">
+    <line x1="158" y1="200" x2="202" y2="200"/>
+    <line x1="158" y1="250" x2="202" y2="250"/>
+    <line x1="668" y1="200" x2="712" y2="200"/>
+    <line x1="668" y1="250" x2="712" y2="250"/>
+  </g>
+
+  <!-- indicador de nivel ~26 m -->
+  <line x1="735" y1="150" x2="735" y2="250" stroke="#1b4f72" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <polygon points="735,151 731,162 739,162" fill="#1b4f72"/>
+  <polygon points="735,249 731,238 739,238" fill="#1b4f72"/>
+  <text x="744" y="205" font-size="13" fill="#1b4f72">~26 m</text>
+
+  <!-- nube + lluvia -->
+  <g fill="#cfd8dc">
+    <ellipse cx="400" cy="80" rx="46" ry="24"/>
+    <ellipse cx="440" cy="72" rx="38" ry="28"/>
+    <ellipse cx="362" cy="72" rx="34" ry="24"/>
+  </g>
+  <g stroke="#5dade2" stroke-width="3" stroke-linecap="round">
+    <line x1="374" y1="102" x2="368" y2="122"/>
+    <line x1="402" y1="104" x2="396" y2="126"/>
+    <line x1="430" y1="102" x2="424" y2="122"/>
+  </g>
+  <text x="476" y="94" font-size="13" fill="#5d6d7e">lluvia → llena el lago</text>
+
+  <!-- barco en el lago -->
+  <g>
+    <rect x="436" y="120" width="46" height="16" fill="#e74c3c"/>
+    <rect x="444" y="110" width="12" height="12" fill="#ecf0f1" stroke="#bdc3c7"/>
+    <polygon points="430,136 488,136 478,150 440,150" fill="#34495e"/>
+  </g>
+
+  <!-- etiquetas -->
+  <text x="84" y="286" font-size="15" font-weight="600" fill="#ffffff">Atlántico</text>
+  <text x="876" y="286" font-size="15" font-weight="600" fill="#ffffff" text-anchor="end">Pacífico</text>
+  <text x="430" y="182" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle">Lago Gatún</text>
+  <text x="180" y="322" font-size="12.5" fill="#1b2631" text-anchor="middle">Esclusas de Gatún</text>
+  <text x="690" y="322" font-size="12.5" fill="#1b2631" text-anchor="middle">Esclusas Pedro Miguel / Miraflores</text>
+
+  <text x="480" y="350" font-size="14" font-weight="600" fill="#1b4f72" text-anchor="middle">lluvia → Lago Gatún → cupos → tránsitos</text>
+</svg>
