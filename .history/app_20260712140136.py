@@ -136,22 +136,6 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
     c9.metric("Correlación lluvia-tránsitos (12m)", f"{r_agua:+.2f}" if r_agua else "—")
     c10.metric("R² del modelo", f"{metricas.get('R2', 0):.2f}" if metricas else "—")
     
-    ingresos_df = cargar_ingresos()
-    if not ingresos_df.empty:
-        ing_filtrado = ingresos_df[(ingresos_df["fecha"] >= df["fecha"].min()) &
-                                    (ingresos_df["fecha"] <= df["fecha"].max())]
-        ing_ult = (ing_filtrado["ingreso_mensual_con_subasta_usd"].iloc[-1]
-                if not ing_filtrado.empty else None)
-        ing_prom = (ing_filtrado["ingreso_mensual_con_subasta_usd"].mean()
-                    if not ing_filtrado.empty else None)
-
-        c11, c12 = st.columns(2)
-        c11.metric("Ingreso estimado último mes", f"${ing_ult:,.0f}" if ing_ult else "—",
-                help="Peaje base (ancla pública) + CAD (real ACP) + prima de subasta FY2024 "
-                        "(total real $450M, repartido por mes de forma estimada). "
-                        "Ver docs/METODOLOGIA_PRECIOS.md")
-        c12.metric("Ingreso promedio mensual (rango)", f"${ing_prom:,.0f}" if ing_prom else "—")
-
     # === Sección de consulta en lenguaje natural (LLM) — nueva subsección ===
     st.subheader("Preguntale a los datos (LLM)")
     pregunta = st.text_input("Escribí tu pregunta sobre el rango seleccionado",
@@ -181,6 +165,22 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
     if not key:
         st.caption("Sin `GEMINI_API_KEY`: resumen por plantilla local (degradación). "
                    "Agregá la clave en `.streamlit/secrets.toml` para usar Gemini.")
+    
+    ingresos_df = cargar_ingresos()
+    if not ingresos_df.empty:
+        ing_filtrado = ingresos_df[(ingresos_df["fecha"] >= df["fecha"].min()) &
+                                    (ingresos_df["fecha"] <= df["fecha"].max())]
+        ing_ult = (ing_filtrado["ingreso_mensual_con_subasta_usd"].iloc[-1]
+                if not ing_filtrado.empty else None)
+        ing_prom = (ing_filtrado["ingreso_mensual_con_subasta_usd"].mean()
+                    if not ing_filtrado.empty else None)
+
+        c11, c12 = st.columns(2)
+        c11.metric("Ingreso estimado último mes", f"${ing_ult:,.0f}" if ing_ult else "—",
+                help="Peaje base (ancla pública) + CAD (real ACP) + prima de subasta FY2024 "
+                        "(total real $450M, repartido por mes de forma estimada). "
+                        "Ver docs/METODOLOGIA_PRECIOS.md")
+        c12.metric("Ingreso promedio mensual (rango)", f"${ing_prom:,.0f}" if ing_prom else "—")
 
 
 def pagina_tendencias(df, serie_col, serie_label):
