@@ -95,7 +95,14 @@ nivel del lago → capacidad (cupos) → tránsitos**.
    tránsitos por año-mes → `data/processed/canal.parquet`.
 5. **ML** (`features.py`, `train_model.py`): features + `RandomForestRegressor` con
    **split temporal**; y `forecast.py` para el pronóstico recursivo con banda.
-6. **Dashboard** (`app.py`): 5 páginas + resumen ejecutivo por LLM.
+6. **Dashboard** (`app.py`): 5 páginas, con KPIs de ingresos, consulta en lenguaje
+   natural y resumen ejecutivo por LLM.
+
+**Extensión de precios y Power BI** (agregada por el equipo, fuera del flujo base):
+`scraper_tarifas.py` → `data/raw/tarifas.csv`; `calculo_ingresos.py` (usa
+`canal.parquet` + `tarifas.csv`) → `data/processed/ingresos.csv` +
+`data/powerbi/FactIngresos.csv`; `export_powerbi.py` → modelo estrella en
+`data/powerbi/`. Detalle en `docs/METODOLOGIA_PRECIOS.md` y `docs/POWERBI_DASHBOARDS.md`.
 
 ---
 
@@ -178,13 +185,16 @@ El pipeline **siempre corre**, haya o no red:
 .
 ├── data/
 │   ├── raw/            # crudos por fuente (regenerables; en .gitignore)
-│   └── processed/      # canal.parquet (versionado)
+│   ├── processed/      # canal.parquet, ingresos.csv (versionados)
+│   └── powerbi/        # modelo estrella (Dim*/Fact*.csv) para Power BI
 ├── src/
-│   ├── ingesta/        # scraper_acp.py, fetch_clima.py, fallback.py
-│   ├── pipeline/       # build_dataset.py
+│   ├── ingesta/        # scraper_acp.py, fetch_clima.py, fallback.py, scraper_tarifas.py
+│   ├── pipeline/       # build_dataset.py, export_powerbi.py
 │   ├── ml/             # features.py, train_model.py, forecast.py
-│   └── llm/            # resumen.py
+│   ├── pricing/        # calculo_ingresos.py (peaje + CAD + prima de subasta)
+│   └── llm/            # resumen.py, consultas.py
 ├── models/             # modelo.pkl, metricas.json, importancia.csv, pronostico.*
+├── docs/               # DOCUMENTACION.md + JUSTIFICACION_MODELO_ML / METODOLOGIA_PRECIOS / POWERBI_DASHBOARDS
 ├── app.py              # dashboard Streamlit
 ├── requirements.txt
 ├── .gitignore
@@ -205,16 +215,21 @@ python -m venv .venv
 # 2) Dependencias
 pip install -r requirements.txt
 
-# 3) (Opcional) Regenerar todo el pipeline desde cero
-python src\pipeline\build_dataset.py   # -> data/processed/canal.parquet
-python src\ml\train_model.py           # -> models/modelo.pkl, metricas.json, importancia.csv
-python src\ml\forecast.py              # -> models/pronostico.csv, pronostico.json
+# 3) (Opcional) Regenerar todo el pipeline desde cero (respetar el orden)
+python src\pipeline\build_dataset.py    # -> data/processed/canal.parquet
+python src\ml\train_model.py            # -> models/modelo.pkl, metricas.json, importancia.csv
+python src\ml\forecast.py               # -> models/pronostico.csv, pronostico.json
+python src\ingesta\scraper_tarifas.py   # -> data/raw/tarifas.csv
+python src\pricing\calculo_ingresos.py  # -> data/processed/ingresos.csv + data/powerbi/FactIngresos.csv
+python src\pipeline\export_powerbi.py   # -> data/powerbi/ (modelo estrella para Power BI)
 
 # 4) Levantar el dashboard
 streamlit run app.py
 ```
 
 En Linux/Mac, el paso 1 es `source .venv/bin/activate` y las rutas usan `/`.
+La cadena de ingresos es obligatoria en ese orden: `build_dataset → scraper_tarifas
+→ calculo_ingresos` (`calculo_ingresos.py` aborta si falta `data/raw/tarifas.csv`).
 
 > Los artefactos (`canal.parquet` y `models/`) ya vienen versionados, así que el
 > paso 3 es **opcional**: la app corre directamente con `streamlit run app.py`.

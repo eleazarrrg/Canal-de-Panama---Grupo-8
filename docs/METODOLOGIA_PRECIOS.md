@@ -52,7 +52,7 @@ Power BI con **Obtener datos → Carpeta** junto a los demás CSV de
 `data/powerbi/`; las relaciones se crean automáticamente si los nombres de
 columna coinciden, o manualmente si no.
 
-## 6. El caso FY2024: por qué los ingresos NO cayeron con la sequía (dato real)
+## 5. El caso FY2024: por qué los ingresos NO cayeron con la sequía (dato real)
 
 Esto responde a la pregunta que probablemente te haga el profesor: en el año
 fiscal 2024 (oct-2023 a sep-2024) los tránsitos cayeron **9.2%** y el tonelaje
@@ -96,7 +96,7 @@ en el mismo gráfico durante FY2024 hace visible el efecto: la línea "con
 subasta" se mantiene casi plana pese a la caída de tránsitos, mientras que la
 línea sin subasta sí muestra la caída que uno esperaría solo por menos buques.
 
-## 7. Próximo paso opcional (si el profesor pide precisión real)
+## 6. Próximo paso opcional (si el profesor pide precisión real)
 
 Si se consigue acceso a un reporte financiero anual desglosado de la ACP
 (ingresos totales por año fiscal), se puede **calibrar** el peaje base ancla

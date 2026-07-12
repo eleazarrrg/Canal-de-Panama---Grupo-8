@@ -8,9 +8,10 @@
    python src/ingesta/scraper_tarifas.py        # -> data/raw/tarifas.csv
    python src/pricing/calculo_ingresos.py       # -> FactIngresos.csv (peaje + CAD + prima de subasta FY2024)
    ```
-   Los tres escriben en `data/powerbi/`. El orden importa: `export_powerbi.py`
-   crea `DimFecha`/`DimEsclusa` primero; `calculo_ingresos.py` reutiliza esos
-   mismos `fecha_id`/`esclusa_id` para que `FactIngresos` calce con el resto.
+   `export_powerbi.py` y `calculo_ingresos.py` escriben en `data/powerbi/`;
+   `scraper_tarifas.py` escribe en `data/raw/tarifas.csv`. El orden importa:
+   `export_powerbi.py` crea `DimFecha`/`DimEsclusa` primero y `calculo_ingresos.py`
+   reutiliza esos mismos `fecha_id`/`esclusa_id` para que `FactIngresos` calce.
 2. En Power BI Desktop: **Obtener datos → Carpeta** → apuntá a `data/powerbi/`
    → **Combinar y transformar** los 6 CSV (o cargalos uno por uno con
    **Obtener datos → Texto/CSV**).
@@ -120,7 +121,7 @@ Ingreso Promedio por Tránsito = DIVIDE([Ingreso Total con Subasta], [Total Trá
 - Gráfico combinado: `Total Tránsitos` (barras) vs. `Ingreso Total con
   Subasta` (línea, eje secundario), filtrado a FY2024. Este es el gráfico que
   responde directamente a "por qué los ingresos no cayeron con la sequía"
-  (ver `docs/METODOLOGIA_PRECIOS.md` §6).
+  (ver `docs/METODOLOGIA_PRECIOS.md` §5).
 - Nota de texto en la página: aclarar que el peaje base es una ancla pública
   estimada y que la prima de subasta reparte un total real ($450M FY2024) de
   forma proporcional por mes (no es un dato oficial mensual).

@@ -3,7 +3,6 @@
 Páginas: Resumen, Tendencias, Agua vs. Tránsitos, Mapa, Pronóstico.
 """
 from __future__ import annotations
-from src.llm.consultas import responder_pregunta
 
 import json
 import pathlib
@@ -18,6 +17,7 @@ ROOT = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from src.llm.resumen import generar_resumen
+from src.llm.consultas import responder_pregunta
 
 PARQUET = ROOT / "data" / "processed" / "canal.parquet"
 METRICAS = ROOT / "models" / "metricas.json"
@@ -123,17 +123,18 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
     pct_neopanamax = (ult["transitos_neopanamax"] / ult["transitos_total"] * 100
                     if ult["transitos_total"] else None)
     tonelaje_prom_6m = df["tonelaje"].tail(6).mean() if len(df) >= 1 else None
-    r_agua = df["lluvia_acum_12m"].corr(df["transitos_total"]) if "lluvia_acum_12m" in df else None
+    _r = df["lluvia_acum_12m"].corr(df["transitos_total"]) if "lluvia_acum_12m" in df else None
+    r_agua = _r if _r is not None and pd.notna(_r) else None
     
     c5, c6, c7, c8 = st.columns(4)
-    c5.metric("Lluvia acumulada 12m", f"{lluvia_acum_ult:,.0f} mm" if lluvia_acum_ult else "—")
-    c6.metric("% Neopanamax (último mes)", f"{pct_neopanamax:.1f}%" if pct_neopanamax else "—")
-    c7.metric("Tonelaje prom. (6m)", f"{tonelaje_prom_6m/1e6:,.1f} M" if tonelaje_prom_6m else "—")
+    c5.metric("Lluvia acumulada 12m", f"{lluvia_acum_ult:,.0f} mm" if lluvia_acum_ult is not None else "—")
+    c6.metric("% Neopanamax (último mes)", f"{pct_neopanamax:.1f}%" if pct_neopanamax is not None else "—")
+    c7.metric("Tonelaje prom. (6m)", f"{tonelaje_prom_6m/1e6:,.1f} M" if tonelaje_prom_6m is not None else "—")
     c8.metric("MAE del modelo", f"{metricas.get('MAE', 0):.1f}" if metricas else "—",
             help="Error absoluto medio del RandomForest en el set de prueba (FY2025).")
     
     c9, c10 = st.columns(2)
-    c9.metric("Correlación lluvia-tránsitos (12m)", f"{r_agua:+.2f}" if r_agua else "—")
+    c9.metric("Correlación lluvia-tránsitos (12m)", f"{r_agua:+.2f}" if r_agua is not None else "—")
     c10.metric("R² del modelo", f"{metricas.get('R2', 0):.2f}" if metricas else "—")
     
     ingresos_df = cargar_ingresos()
@@ -151,6 +152,12 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
                         "(total real $450M, repartido por mes de forma estimada). "
                         "Ver docs/METODOLOGIA_PRECIOS.md")
         c12.metric("Ingreso promedio mensual (rango)", f"${ing_prom:,.0f}" if ing_prom else "—")
+
+    # La API key se lee una sola vez; la usan la consulta NL y el resumen ejecutivo.
+    try:
+        key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        key = None
 
     # === Sección de consulta en lenguaje natural (LLM) — nueva subsección ===
     st.subheader("Preguntale a los datos (LLM)")
@@ -171,10 +178,6 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
         "lluvia_acum": f"{ult['lluvia_acum_12m']:.0f}" if pd.notna(ult["lluvia_acum_12m"]) else "s/d",
         "pronostico": pron_txt,
     }
-    try:
-        key = st.secrets["GEMINI_API_KEY"]
-    except Exception:
-        key = None
     if st.button("Regenerar resumen") or "resumen_txt" not in st.session_state:
         st.session_state["resumen_txt"] = generar_resumen(stats, key)
     st.write(st.session_state["resumen_txt"])

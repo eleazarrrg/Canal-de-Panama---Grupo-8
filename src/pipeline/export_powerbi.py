@@ -8,6 +8,9 @@ Genera en data/powerbi/:
     FactClima.csv         -- hechos de clima mensual (grano: mes)
     FactPronostico.csv    -- pronóstico FY2026 con banda de intervalo
 
+(FactIngresos.csv lo genera src/pricing/calculo_ingresos.py, no este script; usa
+las mismas claves fecha_id/esclusa_id para unirse al modelo estrella.)
+
 Diseño (grano y relaciones):
 
     DimFecha (fecha_id) 1───* FactTransitos (fecha_id, esclusa_id)
@@ -38,10 +41,8 @@ MESES_ES = {
     7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre",
     12: "Diciembre",
 }
-TRIMESTRE = {1: "T3", 2: "T3", 3: "T3", 4: "T4", 5: "T4", 6: "T4",
-             7: "T1", 8: "T1", 9: "T1", 10: "T2", 11: "T2", 12: "T2"}
 # Trimestre fiscal ACP (año fiscal empieza en octubre): oct-dic=T1, ene-mar=T2,
-# abr-jun=T3, jul-sep=T4. Corregido abajo con la función real.
+# abr-jun=T3, jul-sep=T4. Ver _trimestre_fiscal().
 
 
 def _trimestre_fiscal(mes: int) -> str:
@@ -64,7 +65,7 @@ def construir_dim_fecha(fechas: pd.Series) -> pd.DataFrame:
         lambda r: r["anio"] + 1 if r["mes_num"] >= 10 else r["anio"], axis=1
     )
     d["trimestre_fiscal"] = d["mes_num"].map(_trimestre_fiscal)
-    d["etiqueta"] = d["fecha"].dt.strftime("%b-%Y")
+    d["etiqueta"] = d["mes_nombre"].str[:3] + "-" + d["anio"].astype(str)
     return d[["fecha_id", "fecha", "anio", "mes_num", "mes_nombre",
               "anio_fiscal", "trimestre_fiscal", "etiqueta"]]
 
@@ -97,7 +98,7 @@ def construir_fact_clima(df: pd.DataFrame, dim_fecha: pd.DataFrame) -> pd.DataFr
     return base[cols]
 
 
-def construir_fact_pronostico(dim_fecha: pd.DataFrame) -> pd.DataFrame | None:
+def construir_fact_pronostico(dim_fecha: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame] | None:
     if not PRONOSTICO.exists():
         return None
     fc = pd.read_csv(PRONOSTICO, parse_dates=["fecha"])

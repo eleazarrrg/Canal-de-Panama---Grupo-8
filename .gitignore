@@ -15,6 +15,7 @@ data/raw/*
 .vscode/
 .idea/
 .claude/
+.history/
 
 # Nota: data/processed/canal.parquet y models/ SÍ se versionan
 # para que la app despliegue en Streamlit Cloud sin correr el pipeline.

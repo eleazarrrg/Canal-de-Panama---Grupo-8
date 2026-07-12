@@ -84,7 +84,7 @@ PREGUNTA: {pregunta}
     try:
         client = genai.Client(api_key=api_key)
         resp = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-flash-latest",  # mismo modelo que resumen.py (2.0-flash quedó deprecado)
             contents=prompt,
         )
         return resp.text.strip()
