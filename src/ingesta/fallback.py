@@ -113,11 +113,11 @@ def construir_serie_mensual(controles: dict) -> pd.DataFrame:
     df["transitos_neopanamax"] = neo
     df["transitos_panamax"] = df["transitos_total"] - df["transitos_neopanamax"]
 
-    # Tonelaje CP/SUAB (estimado, anclado a FY2025; neopanamax pesa más).
-    df["tonelaje"] = (
-        df["transitos_panamax"] * TPP_PANAMAX
-        + df["transitos_neopanamax"] * TPP_NEOPANAMAX
-    ).round().astype("int64")
+    # Tonelaje CP/SUAB (estimado, anclado a FY2025; neopanamax pesa más). Se guarda
+    # desagregado por tipo de esclusa; el total es exactamente la suma de ambos.
+    df["tonelaje_panamax"] = (df["transitos_panamax"] * TPP_PANAMAX).round().astype("int64")
+    df["tonelaje_neopanamax"] = (df["transitos_neopanamax"] * TPP_NEOPANAMAX).round().astype("int64")
+    df["tonelaje"] = df["tonelaje_panamax"] + df["tonelaje_neopanamax"]
 
     # Nivel del lago (contexto).
     df["nivel_lago_m"] = _nivel_lago(meses).round(2)
@@ -126,6 +126,7 @@ def construir_serie_mensual(controles: dict) -> pd.DataFrame:
     cols = [
         "fecha", "anio", "mes", "anio_fiscal", "transitos_total",
         "transitos_panamax", "transitos_neopanamax", "tonelaje",
+        "tonelaje_panamax", "tonelaje_neopanamax",
         "nivel_lago_m", "fuente",
     ]
     out = df[cols].copy()

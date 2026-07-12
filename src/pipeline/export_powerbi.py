@@ -79,13 +79,14 @@ def construir_dim_esclusa() -> pd.DataFrame:
 
 def construir_fact_transitos(df: pd.DataFrame, dim_fecha: pd.DataFrame) -> pd.DataFrame:
     base = df.merge(dim_fecha[["fecha_id", "fecha"]], on="fecha", how="left")
-    panamax = base[["fecha_id", "transitos_panamax", "tonelaje", "fuente"]].copy()
+    panamax = base[["fecha_id", "transitos_panamax", "tonelaje_panamax", "fuente"]].copy()
     panamax["esclusa_id"] = 1
-    panamax = panamax.rename(columns={"transitos_panamax": "transitos"})
-    neopanamax = base[["fecha_id", "transitos_neopanamax", "fuente"]].copy()
+    panamax = panamax.rename(columns={"transitos_panamax": "transitos",
+                                      "tonelaje_panamax": "tonelaje"})
+    neopanamax = base[["fecha_id", "transitos_neopanamax", "tonelaje_neopanamax", "fuente"]].copy()
     neopanamax["esclusa_id"] = 2
-    neopanamax["tonelaje"] = None  # tonelaje CP/SUAB solo viene a nivel total
-    neopanamax = neopanamax.rename(columns={"transitos_neopanamax": "transitos"})
+    neopanamax = neopanamax.rename(columns={"transitos_neopanamax": "transitos",
+                                            "tonelaje_neopanamax": "tonelaje"})
     fact = pd.concat([panamax, neopanamax], ignore_index=True)
     return fact[["fecha_id", "esclusa_id", "transitos", "tonelaje", "fuente"]]
 

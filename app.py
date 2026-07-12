@@ -36,6 +36,12 @@ NOMBRE_SERIE = {
     "Neopanamax": "transitos_neopanamax",
 }
 
+NOMBRE_TONELAJE = {
+    "Ambas (total)": "tonelaje",
+    "Panamax": "tonelaje_panamax",
+    "Neopanamax": "tonelaje_neopanamax",
+}
+
 PUNTOS_CANAL = {
     "Entrada Atlántico (Cristóbal/Colón)": (9.36, -79.92),
     "Esclusas de Gatún": (9.27, -79.92),
@@ -72,7 +78,15 @@ def cargar_pronostico():
 def cargar_ingresos() -> pd.DataFrame:
     if not INGRESOS.exists():
         return pd.DataFrame()
-    ing = pd.read_csv(INGRESOS, parse_dates=["fecha"])
+    return pd.read_csv(INGRESOS, parse_dates=["fecha"])  # detalle por tipo_esclusa (2 filas/mes)
+
+
+def ingresos_por_esclusa(ing: pd.DataFrame, serie_label: str) -> pd.DataFrame:
+    """Ingresos agregados por fecha para la esclusa elegida (o total si 'Ambas')."""
+    if ing.empty:
+        return ing
+    if serie_label in ("Panamax", "Neopanamax"):
+        ing = ing[ing["tipo_esclusa"] == serie_label]
     return ing.groupby("fecha", as_index=False)[
         ["ingreso_mensual_usd", "prima_subasta_usd", "ingreso_mensual_con_subasta_usd"]
     ].sum()
@@ -122,7 +136,7 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
     lluvia_acum_ult = ult["lluvia_acum_12m"] if pd.notna(ult["lluvia_acum_12m"]) else None
     pct_neopanamax = (ult["transitos_neopanamax"] / ult["transitos_total"] * 100
                     if ult["transitos_total"] else None)
-    tonelaje_prom_6m = df["tonelaje"].tail(6).mean() if len(df) >= 1 else None
+    tonelaje_prom_6m = df[NOMBRE_TONELAJE[serie_label]].tail(6).mean() if len(df) else None
     _r = df["lluvia_acum_12m"].corr(df["transitos_total"]) if "lluvia_acum_12m" in df else None
     r_agua = _r if _r is not None and pd.notna(_r) else None
     
@@ -139,19 +153,21 @@ def pagina_resumen(df, df_full, fc, serie_col, serie_label):
     
     ingresos_df = cargar_ingresos()
     if not ingresos_df.empty:
-        ing_filtrado = ingresos_df[(ingresos_df["fecha"] >= df["fecha"].min()) &
-                                    (ingresos_df["fecha"] <= df["fecha"].max())]
+        ing_filtrado = ingresos_por_esclusa(ingresos_df, serie_label)
+        ing_filtrado = ing_filtrado[(ing_filtrado["fecha"] >= df["fecha"].min()) &
+                                    (ing_filtrado["fecha"] <= df["fecha"].max())]
         ing_ult = (ing_filtrado["ingreso_mensual_con_subasta_usd"].iloc[-1]
                 if not ing_filtrado.empty else None)
         ing_prom = (ing_filtrado["ingreso_mensual_con_subasta_usd"].mean()
                     if not ing_filtrado.empty else None)
 
         c11, c12 = st.columns(2)
-        c11.metric("Ingreso estimado último mes", f"${ing_ult:,.0f}" if ing_ult else "—",
+        c11.metric(f"Ingreso estimado último mes · {serie_label}",
+                f"${ing_ult:,.0f}" if ing_ult is not None else "—",
                 help="Peaje base (ancla pública) + CAD (real ACP) + prima de subasta FY2024 "
                         "(total real $450M, repartido por mes de forma estimada). "
                         "Ver docs/METODOLOGIA_PRECIOS.md")
-        c12.metric("Ingreso promedio mensual (rango)", f"${ing_prom:,.0f}" if ing_prom else "—")
+        c12.metric("Ingreso promedio mensual (rango)", f"${ing_prom:,.0f}" if ing_prom is not None else "—")
 
     # La API key se lee una sola vez; la usan la consulta NL y el resumen ejecutivo.
     try:
@@ -201,20 +217,21 @@ def pagina_tendencias(df, serie_col, serie_label):
     st.plotly_chart(fig, use_container_width=True, key="chart_tendencias_transitos")
 
     fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=df["fecha"], y=df["tonelaje"] / 1e6, mode="lines",
-                              name="Tonelaje CP/SUAB", line=dict(color="#2ca02c")))
+    fig2.add_trace(go.Scatter(x=df["fecha"], y=df[NOMBRE_TONELAJE[serie_label]] / 1e6, mode="lines",
+                              name=f"Tonelaje CP/SUAB ({serie_label})", line=dict(color="#2ca02c")))
     fig2.update_layout(height=340, margin=dict(t=50, b=10),
-                       title="Tonelaje CP/SUAB mensual",
+                       title=f"Tonelaje CP/SUAB mensual — {serie_label}",
                        yaxis_title="Tonelaje CP/SUAB (millones)", xaxis_title=None)
     st.plotly_chart(fig2, use_container_width=True, key="chart_tendencias_tonelaje")
     st.caption("Tonelaje en toneladas **CP/SUAB** (sistema de arqueo del Canal), no toneladas largas.")
 
     ingresos_df = cargar_ingresos()
     if not ingresos_df.empty:
-        ing = ingresos_df[(ingresos_df["fecha"] >= df["fecha"].min()) &
-                        (ingresos_df["fecha"] <= df["fecha"].max())]
-    
-        st.subheader("Ingresos estimados (peaje + Cargo por Agua Dulce)")
+        ing = ingresos_por_esclusa(ingresos_df, serie_label)
+        ing = ing[(ing["fecha"] >= df["fecha"].min()) &
+                  (ing["fecha"] <= df["fecha"].max())]
+
+        st.subheader(f"Ingresos estimados — {serie_label} (peaje + Cargo por Agua Dulce)")
         fig_ing = go.Figure()
         fig_ing.add_trace(go.Scatter(x=ing["fecha"], y=ing["ingreso_mensual_usd"],
                                     mode="lines", name="Ingreso (peaje + CAD)",
